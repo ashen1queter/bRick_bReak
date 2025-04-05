@@ -242,9 +242,6 @@ static void MX_GPIO_Init(void)
 }
 
 void scan_keypad(void) {
-    static uint8_t previous_state[ROW_COUNT][COL_COUNT] = {0};  // Store previous state of keys
-    uint8_t any_key_pressed = 0;  // Flag to track if any key is pressed
-
     for (int row = 0; row < ROW_COUNT; row++) {
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
