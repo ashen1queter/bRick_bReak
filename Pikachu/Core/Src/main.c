@@ -31,6 +31,9 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
+#define INACTIVITY_TIMEOUT 300000
+static uint32_t inactivity_timer = 0;
+
 #define ROW_COUNT    2
 #define COL_COUNT    5
 #define MCU1_ADDRESS  0x01
@@ -116,8 +119,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      inactivity_timer++;
 	  scan_keypad();
 	  UART_Receive_Data();
+
+	  if (inactivity_timer >= INACTIVITY_TIMEOUT)
+	          {
+	              Enter_Sleep_Mode();
+	          }
+	  inactivity_timer = 0;
   }
   /* USER CODE END 3 */
 }
@@ -241,6 +251,7 @@ void scan_keypad(void) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
                 uint8_t key_code = keymap[row][col];  // Get the corresponding keycode from keymap
                 Send_HID_Key(key_code);  // Send HID report for key press
+                inactivity_timer = 0;
             }
         }
 
@@ -277,6 +288,8 @@ void UART_Receive_Data(void) {
 	if (HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100) == HAL_OK) {
 		uint8_t received_address = received_data[0];
         uint8_t data = received_data[1];
+
+        inactivity_timer = 0;
 
         if (received_address == MCU1_ADDRESS) {
         	switch (data)
@@ -379,6 +392,18 @@ void UART_Receive_Data(void) {
         	}
         }
 }
+
+	void Enter_Sleep_Mode(void)
+	{
+	    // Optional: Disable peripherals if needed before entering sleep mode
+
+	    // Enter Sleep mode (low power mode)
+	    HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+	}
+
+	// Need to add turn off and that shld sent through uart to other 3 mcus to turnf of too
+
 
 /* USER CODE BEGIN 4 */
 
