@@ -42,6 +42,7 @@ static uint32_t inactivity_timer = 0;
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
+
 uint8_t keymap[ROW_COUNT][COL_COUNT] = {
     {0x14, 0x1A, 0x08, 0x15, 0x17},
     {0x04, 0x16, 0x07, 0x09, 0x0A}
