@@ -221,9 +221,13 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
-void UART_Transmit_Key(uint8_t key_code) {
+void UART_Transmit_Key((uint8_t mcu_address, uint8_t key_code) {
+	uint8_t data[2];
+
+	data[0] = mcu_address;
+	data[1] = key_code;
     // Send the key code over USART
-    HAL_UART_Transmit(&huart1, (uint8_t *)&key_code, 1, 100);  // Transmit 1 byte (the key code) over USART
+    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
 }
 
 void scan_keypad(void) {
@@ -233,7 +237,7 @@ void scan_keypad(void) {
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
                 uint8_t key_code = keymap[row][col];  // Get the corresponding keycode from keymap
-                UART_Transmit_Key(key_code);  // Send HID report for key press
+                UART_Transmit_Key(MCU1_ADDRESS, key_code);
                 inactivity_timer = 0;
             }
         }
