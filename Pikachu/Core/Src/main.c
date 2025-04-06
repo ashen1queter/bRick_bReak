@@ -256,17 +256,10 @@ void scan_keypad(void) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
             	
             	if(isSecondlayer){
-            		keyc_code = layer1[row][col];
+            		key_code = layer1[row][col];
             	}
             	else{
             		key_code = layer0[row][col];
-            	}
-            	
-            	if(key_code == 0x1D){
-            		isSecondlayer = !isSecondlayer;
-            	}
-            	else{
-            		Send_HID_Key(key_code);
             	}
             	
             	inactivity_timer = 0;
@@ -336,8 +329,12 @@ void UART_Receive_Data(void) {
         		Send_HID_Key(0x2C);
         	    break;
 
-        	case 'M':
-        	    Send_HID_Key(0x2C);
+        	case 'N':
+        		isSecondlayer = !isSecondlayer;
+        		
+        		if(!isSecondlayer){
+        			isSecondlayer = !isSecondlayer
+        		}
         	    break;
     }
 }
