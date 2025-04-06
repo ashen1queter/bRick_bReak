@@ -54,6 +54,11 @@ uint8_t layer1[ROW_COUNT][COL_COUNT] = {
     {0x04, 0x16, 0x19, 0x1E, 0x1F},  
     {0x20, 0x21, 0x22, 0x23, 0x24}
 };
+
+uint8_t layer2[ROW_COUNT][COL_COUNT] = {
+    {0x04, 0x16, 0x19, 0x1E, 0x1F},  
+    {0x20, 0x21, 0x22, 0x23, 0x24}
+};
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -258,6 +263,9 @@ void scan_keypad(void) {
             	if(isSecondlayer){
             		key_code = layer1[row][col];
             	}
+            	if(isThirdlayer){
+            		key_code = layer2[row][col];
+            	}
             	else{
             		key_code = layer0[row][col];
             	}
@@ -333,7 +341,7 @@ void UART_Receive_Data(void) {
         		isSecondlayer = !isSecondlayer;
         		
         		if(!isSecondlayer){
-        			isSecondlayer = !isSecondlayer
+        			isSecondlayer = !isSecondlayer;
         		}
         	    break;
     }
@@ -401,8 +409,12 @@ void UART_Receive_Data(void) {
         		Send_HID_Key(0x2C);
         		break;
 
-        	case 'A':
-        		Send_HID_Key(0x2C);
+        	case 'V':
+        		isThirdlayer = !isThirdlayer;
+        		        		
+        		if(!isThirdlayer){
+        			isThirdlayer = !isThirdlayer;
+        		}
         		break;
         	}
         }
