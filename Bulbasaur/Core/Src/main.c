@@ -30,6 +30,28 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
+#define ROW_COUNT    2
+#define COL_COUNT    5
+
+static uint32_t inactivity_timer = 0;
+static uint8_t received_data[2];
+
+bool isSecondlayer = false;
+
+#define MCU2_ADDRESS  0x02
+
+uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
+uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin};
+
+uint8_t layer0[ROW_COUNT][COL_COUNT] = {
+    {0x14, 0x1A, 0x08, 0x15, 0x17},  
+    {0x04, 0x16, 0x07, 0x09, 0x0A}  
+};
+
+uint8_t layer1[ROW_COUNT][COL_COUNT] = {
+    {},  
+    {}
+};
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -97,9 +119,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+	  inactivity_timer++;
+	  scan_keypad();
+	  UART_Send_Data();
+	  
+	  if (inactivity_timer >= INACTIVITY_TIMEOUT)
+	  	  {
+		  	  Enter_Sleep_Mode();
+	  	  }
+	  inactivity_timer = 0;
   }
   /* USER CODE END 3 */
 }
@@ -200,15 +228,39 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE END MX_GPIO_Init_2 */
 }
+void scan_keypad(void) {
+	received_data[0] = MCU2_ADDRESS;
+    for (int row = 0; row < ROW_COUNT; row++) {
+        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
-/* USER CODE BEGIN 4 */
+        for (int col = 0; col < COL_COUNT; col++) {
+            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+            	
+            	if(isSecondlayer){
+            		key_code = layer1[row][col];
+            		received_data[1] = key_code;
+            		HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100)
+            	}
+            	else{
+            		key_code = layer0[row][col];
+            		received_data[1] = key_code;
+            		HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100)
+            	}
+            	
+            	inactivity_timer = 0;
+            }
+        }
 
-/* USER CODE END 4 */
+        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);  // Reset row to low
+        HAL_Delay(10);  // Debouncing delay
+    }
+    HAL_Delay(100);  // Additional debounce or delay between scans
+}
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+void UART_Send_Data(void) {
+	HAL_UART_Transmit(&huart1, (uint8_t *)received_data, 2, 100)
+}
+
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
