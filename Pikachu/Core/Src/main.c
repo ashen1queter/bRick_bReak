@@ -34,6 +34,8 @@
 #define INACTIVITY_TIMEOUT 300000
 static uint32_t inactivity_timer = 0;
 
+bool isSecondlayer = false;
+
 #define ROW_COUNT    2
 #define COL_COUNT    5
 #define MCU1_ADDRESS  0x01
@@ -43,9 +45,14 @@ static uint32_t inactivity_timer = 0;
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
 
-uint8_t keymap[ROW_COUNT][COL_COUNT] = {
-    {0x14, 0x1A, 0x08, 0x15, 0x17},
-    {0x04, 0x16, 0x07, 0x09, 0x0A}
+uint8_t layer0[ROW_COUNT][COL_COUNT] = {
+    {0x14, 0x1A, 0x08, 0x15, 0x17},  
+    {0x04, 0x16, 0x07, 0x09, 0x0A}  
+};
+
+uint8_t layer1[ROW_COUNT][COL_COUNT] = {
+    {0x04, 0x16, 0x19, 0x1E, 0x1F},  
+    {0x20, 0x21, 0x22, 0x23, 0x24}
 };
 /* USER CODE BEGIN PD */
 
@@ -247,9 +254,22 @@ void scan_keypad(void) {
 
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
-                uint8_t key_code = keymap[row][col];  // Get the corresponding keycode from keymap
-                Send_HID_Key(key_code);  // Send HID report for key press
-                inactivity_timer = 0;
+            	
+            	if(isSecondlayer){
+            		keyc_code = layer1[row][col];
+            	}
+            	else{
+            		key_code = layer0[row][col];
+            	}
+            	
+            	if(key_code == 0x1D){
+            		isSecondlayer = !isSecondlayer;
+            	}
+            	else{
+            		Send_HID_Key(key_code);
+            	}
+            	
+            	inactivity_timer = 0;
             }
         }
 
