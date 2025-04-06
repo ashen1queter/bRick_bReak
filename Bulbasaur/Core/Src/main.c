@@ -31,27 +31,27 @@
 
 /* Private define ------------------------------------------------------------*/
 #define ROW_COUNT    2
-#define COL_COUNT    5
+#define COL_COUNT    3
 
 static uint32_t inactivity_timer = 0;
-static uint8_t received_data[2];
 
 bool isSecondlayer = false;
 
-#define MCU2_ADDRESS  0x02
+#define MCU2_ADDRESS  0x04
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin};
 
 uint8_t layer0[ROW_COUNT][COL_COUNT] = {
-    {0x14, 0x1A, 0x08, 0x15, 0x17},  
-    {0x04, 0x16, 0x07, 0x09, 0x0A}  
+    {'B', 'N', 'M'},  
+    {'A', 'A', 'C'}   // C for layer 2
 };
 
 uint8_t layer1[ROW_COUNT][COL_COUNT] = {
     {},  
     {}
 };
+
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -122,11 +122,11 @@ int main(void)
 	  inactivity_timer++;
 	  scan_keypad();
 	  UART_Send_Data();
-	  
-	  if (inactivity_timer >= INACTIVITY_TIMEOUT)
-	  	  {
-		  	  Enter_Sleep_Mode();
-	  	  }
+
+	  if (inactivity_timer >= INACTIVITY_TIMEOUT){
+		  Enter_Sleep_Mode();
+	  }
+
 	  inactivity_timer = 0;
   }
   /* USER CODE END 3 */
@@ -217,9 +217,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pins : R1_Pin R2_Pin C1_Pin C2_Pin
-                           C3_Pin */
+                           C3_Pin C4_Pin */
   GPIO_InitStruct.Pin = R1_Pin|R2_Pin|C1_Pin|C2_Pin
-                          |C3_Pin;
+                          |C3_Pin|C4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -228,28 +228,33 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE END MX_GPIO_Init_2 */
 }
+
+void UART_Transmit_Key((uint8_t mcu_address, uint8_t key_code) {
+	uint8_t data[2];
+
+	data[0] = mcu_address;
+	data[1] = key_code;
+    // Send the key code over USART
+    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
+}
+
 void scan_keypad(void) {
-	received_data[0] = MCU2_ADDRESS;
     for (int row = 0; row < ROW_COUNT; row++) {
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
-            	
             	if(isSecondlayer){
-            		key_code = layer1[row][col];
-            		received_data[1] = key_code;
-            		HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100)
-            	}
+            			key_code = layer2[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
             	else{
-            		key_code = layer0[row][col];
-            		received_data[1] = key_code;
-            		HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100)
+            			key_code = layer0[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
+                	inactivity_timer = 0;
             	}
-            	
-            	inactivity_timer = 0;
-            }
-        }
+        	}
 
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);  // Reset row to low
         HAL_Delay(10);  // Debouncing delay
@@ -257,10 +262,14 @@ void scan_keypad(void) {
     HAL_Delay(100);  // Additional debounce or delay between scans
 }
 
-void UART_Send_Data(void) {
-	HAL_UART_Transmit(&huart1, (uint8_t *)received_data, 2, 100)
-}
+void Enter_Sleep_Mode(void)
+{
+    // Optional: Disable peripherals if needed before entering sleep mode
 
+    // Enter Sleep mode (low power mode)
+    HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+}
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */

@@ -241,20 +241,18 @@ void scan_keypad(void) {
 
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+ 
             	if(isSecondlayer){
-            		key_code = layer1[row][col];
+            			key_code = layer2[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
+            	else{
+            			key_code = layer0[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
+            	inactivity_timer = 0;
             	}
-            if(isThirdlayer){
-            		key_code = layer2[row][col];
-            		UART_Transmit_Key(MCU1_ADDRESS, key_code);
-            	}
-            else{
-            		key_code = layer0[row][col];
-            		UART_Transmit_Key(MCU1_ADDRESS, key_code);
-            	}
-                inactivity_timer = 0;
-            }
-        }
+        	}
 
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);  // Reset row to low
         HAL_Delay(10);  // Debouncing delay

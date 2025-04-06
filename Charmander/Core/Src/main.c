@@ -42,7 +42,7 @@ uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin};
 
 uint8_t keymap0[ROW_COUNT][COL_COUNT] = {
     {'Z', 'X', 'C', 'V'},
-    {'M', 'M', 'M'}
+    {'M', 'M', 'M', 'N'} //N for second layer
 };
 
 uint8_t keymap1[ROW_COUNT][COL_COUNT] = {
@@ -242,16 +242,13 @@ void scan_keypad(void) {
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
             	if(isSecondlayer){
-            		key_code = layer1[row][col];
-            	}
-            if(isThirdlayer){
-            		key_code = layer2[row][col];
-            		UART_Transmit_Key(MCU1_ADDRESS, key_code);
-            	}
-            else{
-            		key_code = layer0[row][col];
-            		UART_Transmit_Key(MCU1_ADDRESS, key_code);
-            	}
+            			key_code = layer2[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
+            	else{
+            			key_code = layer0[row][col];
+            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            		}
                 inactivity_timer = 0;
             }
         }
