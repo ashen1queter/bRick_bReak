@@ -243,7 +243,17 @@ void scan_keypad(void) {
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
         for (int col = 0; col < COL_COUNT; col++) {
-            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
+            	
+            	if (keymap0[row][col] == 'N'){
+            		isSecondlayer = !isSecondlayer;
+            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
+            	 	 }
+            	if (keympa0[row][col] == 'N'){
+            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
+            	    isSecondlayer = !isSecondlayer;
+            	     }
+            	
             	if(isSecondlayer){
             			key_code = layer2[row][col];
             			UART_Transmit_Key(MCU1_ADDRESS, key_code);

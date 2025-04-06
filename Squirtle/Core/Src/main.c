@@ -243,7 +243,7 @@ void scan_keypad(void) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
  
             	if(isSecondlayer){
-            			key_code = layer2[row][col];
+            			key_code = layer1[row][col];
             			UART_Transmit_Key(MCU1_ADDRESS, key_code);
             		}
             	else{
