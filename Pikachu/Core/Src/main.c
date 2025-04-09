@@ -29,7 +29,7 @@
 /* Private variables ---------------------------------------------------------*/
 static uint32_t inactivity_timer = 0;
 
-static bool isSecondlayer = false;
+uint8_t HID_report[8] = {0};
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
@@ -37,11 +37,6 @@ uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
 uint8_t layer0[ROW_COUNT][COL_COUNT] = {
     {0x14, 0x1A, 0x08, 0x15, 0x17},  
     {0x04, 0x16, 0x07, 0x09, 0x0A}  
-};
-
-uint8_t layer1[ROW_COUNT][COL_COUNT] = {
-    {0x04, 0x16, 0x19, 0x1E, 0x1F},
-    {0x20, 0x21, 0x22, 0x23, 0x24}
 };
 
 UART_HandleTypeDef huart1;
@@ -223,14 +218,7 @@ void scan_keypad(void) {
 
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
-            	
-            	if(isSecondlayer){
-            		key_code = layer1[row][col];
-            	}
-            	else{
-            		key_code = layer0[row][col];
-            	}
-            	
+            	key_code = layer0[row][col];
             	inactivity_timer = 0;
             }
         }
@@ -242,8 +230,6 @@ void scan_keypad(void) {
 }
 
 void Send_HID_Key(uint8_t key) {
-    uint8_t HID_report[8] = {0};
-
     HID_report[2] = key;
 
     if (hpcd_USB_FS.State == HAL_PCD_STATE_READY) {
@@ -265,75 +251,79 @@ void UART_Receive_Data(void) {
 		uint8_t received_address = received_data[0];
         uint8_t data = received_data[1];
 
-        if(received_address == 0x02 && data == 'N'){
-        		isSecondlayer = !isSecondlayer;
+        if(received_address == 0x02 && data == 'n' || received_address == 0x02 && data == 'c'){
+        		HID_report[0] = 0x01;
 
         inactivity_timer = 0;
 
         if (received_address == MCU2_ADDRESS) {
         	switch (data)
         	{
-        	case 'Z':
+        	case 'z':
         		Send_HID_Key(0x1D);
         		break;
 
-        	case 'X':
+        	case x':
         		Send_HID_Key(0x1B);
         	    break;
 
-        	case 'C':
+        	case 'c':
         	    Send_HID_Key(0x06);
         	    break;
 
-        	case 'V':
+        	case 'v':
         	    Send_HID_Key(0x19);
         	    break;
 
-        	case 'M':
+        	case 'm':
         	    Send_HID_Key(0x2C);
         	    break;
 
-        	case 'M':
+        	case 'm':
         		Send_HID_Key(0x2C);
         	    break;
+
+        	case 'm':
+        		Send_HID_Key(0x2C);
+        		break;
     }
 }
         if(received_address == MCU3_ADDRESS){
         	switch(data){
 
-        	case 'Y':
+        	case 'y':
         		Send_HID_Key(0x1C);
         	    break;
 
-        	case 'U':
+        	case 'u':
         		Send_HID_Key(0x18);
         		break;
 
-        	case 'I':
+        	case 'i':
         		Send_HID_Key(0x0C);
         		break;
 
-        	case 'O':
+        	case 'o':
         		Send_HID_Key(0x12);
         		break;
 
-        	case 'P':
+        	case 'p':
         		Send_HID_Key(0x13);
         		break;
 
-        	case 'H':
+        	case 'h':
         		Send_HID_Key(0x0B);
         		break;
 
-        	case 'J':
+        	case 'j':
         		Send_HID_Key(0x0D);
         		break;
 
-        	case 'K':
+        	case 'k':
         		Send_HID_Key(0x0E);
         		break;
 
-        	case 'L':
+        	case 'l':
         		Send_HID_Key(0x0F);
         		break;
         	}
@@ -341,27 +331,23 @@ void UART_Receive_Data(void) {
         if(received_data == MCU4_ADDRESS){
         	switch(data){
 
-        	case 'B':
+        	case 'b':
         		Send_HID_Key(0x05);
         		break;
 
-        	case 'N':
+        	case 'n':
         		Send_HID_Key(0x11);
         		break;
 
-        	case 'M':
+        	case 'm':
         		Send_HID_Key(0x10);
         		break;
 
-        	case 'A':
+        	case 'a':
         		Send_HID_Key(0x2C);
         		break;
 
-        	case 'A':
-        		Send_HID_Key(0x2C);
-        		break;
-
-        	case 'V':
+        	case 'a':
         		Send_HID_Key(0x2C);
         		break;
         	}

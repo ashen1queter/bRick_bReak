@@ -35,21 +35,14 @@
 
 static uint32_t inactivity_timer = 0;
 
-bool isSecondlayer = false;
-
 #define MCU2_ADDRESS  0x04
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin};
 
 uint8_t layer0[ROW_COUNT][COL_COUNT] = {
-    {'B', 'N', 'M'},  
-    {'A', 'A', 'C'}   // C for layer 2
-};
-
-uint8_t layer1[ROW_COUNT][COL_COUNT] = {
-    {},  
-    {}
+    {'b', 'n', 'm'},
+    {'a', 'a', 'c'}   // C for layer 2
 };
 
 /* USER CODE BEGIN PD */
@@ -243,26 +236,9 @@ void scan_keypad(void) {
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
         for (int col = 0; col < COL_COUNT; col++) {
-            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
-            	
-            	if (keymap0[row][col] == 'C'){
-            		isSecondlayer = !isSecondlayer;
-            		UART_Transmit_Key(MCU3_ADDRESS, key_code);
-            	 	 }
-            	if (keympa0[row][col] == 'C'){
-            		UART_Transmit_Key(MCU3_ADDRESS, key_code);
-            	    isSecondlayer = !isSecondlayer;
-            	     }
-            	
-            	if(isSecondlayer){
-            			key_code = layer2[row][col];
-            			UART_Transmit_Key(MCU3_ADDRESS, key_code);
-            		}
-            	else{
-            			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU3_ADDRESS, key_code);
-            		}
-                	inactivity_timer = 0;
+            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+            	key_code = layer0[row][col];
+            	inactivity_timer = 0;
             	}
         	}
 

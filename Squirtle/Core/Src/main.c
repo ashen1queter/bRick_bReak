@@ -28,7 +28,7 @@
 /* Private variables ---------------------------------------------------------*/
 static uint32_t inactivity_timer = 0;
 
-static bool isSecondlayer = false;
+uint8_t HID_report[8];
 
 static uint8_t data[2];
 
@@ -36,14 +36,10 @@ uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
 
 uint8_t layer0[ROW_COUNT][COL_COUNT] = {
-    {'Y', 'U', 'I', 'O', 'P'},
-    {'H', 'J', 'K', 'L'}
+    {'y', 'u', 'i', 'o', 'p'},
+    {'h', 'j', 'k', 'l'}
 };
 
-uint8_t layer1[ROW_COUNT][COL_COUNT] = {
-    {},
-    {}
-};
 
 UART_HandleTypeDef huart1;
 
@@ -225,10 +221,6 @@ void UART_Receive_Data(void) {
 	if (HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100) == HAL_OK) {
 		uint8_t received_address = received_data[0];
 		uint8_t data = received_data[1];
-		
-	if(received_address == 0x03 && data == 'C'){
-		isSecondlayer = !isSecondlayer;
-	}
 }
 }
 
@@ -238,15 +230,7 @@ void scan_keypad(void) {
 
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
- 
-            	if(isSecondlayer){
-            			key_code = layer1[row][col];
-            			UART_Transmit_Key(MCU4_ADDRESS, key_code);
-            		}
-            	else{
-            			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU4_ADDRESS, key_code);
-            		}
+            	key_code = layer0[row][col];
             	inactivity_timer = 0;
             	}
         	}

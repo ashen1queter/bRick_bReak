@@ -37,8 +37,8 @@ uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin};
 
 uint8_t keymap0[ROW_COUNT][COL_COUNT] = {
-    {'Z', 'X', 'C', 'V'},
-    {'M', 'M', 'M', 'N'} //N for second layer
+    {'z', 'x', 'c', 'v'},
+    {'m', 'm', 'm', 'n'} //N for second layer
 };
 
 uint8_t keymap1[ROW_COUNT][COL_COUNT] = {
@@ -236,30 +236,11 @@ void scan_keypad(void) {
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
 
         for (int col = 0; col < COL_COUNT; col++) {
-            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
-            	
-            	if (keymap0[row][col] == 'N'){
-            	    isSecondlayer = !isSecondlayer;
-            	    UART_Transmit_Key(MCU2_ADDRESS, key_code);
+            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+            	key_code = layer0[row][col];
+            	inactivity_timer = 0;
             	}
-
-            	if (keymap0[row][col] == 'N'){
-            	    isSecondlayer = !isSecondlayer;
-            	    UART_Transmit_Key(MCU2_ADDRESS, key_code);
-            	}
-
-            	
-            	if(isSecondlayer){
-            			key_code = layer2[row][col];
-            			UART_Transmit_Key(MCU2_ADDRESS, key_code);
-            		}
-            	else{
-            			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU2_ADDRESS, key_code);
-            		}
-                inactivity_timer = 0;
-            }
-        }
+        	}
 
         HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);  // Reset row to low
         HAL_Delay(10);  // Debouncing delay
