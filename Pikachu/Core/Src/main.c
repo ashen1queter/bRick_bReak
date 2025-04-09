@@ -20,20 +20,14 @@
 #include "main.h"
 #include "usb_device.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
 /* Private define ------------------------------------------------------------*/
+
+/* Private macro -------------------------------------------------------------*/
+
+/* Private variables ---------------------------------------------------------*/
 static uint32_t inactivity_timer = 0;
 
-bool isSecondlayer = false;
+static bool isSecondlayer = false;
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
@@ -47,16 +41,6 @@ uint8_t layer1[ROW_COUNT][COL_COUNT] = {
     {0x04, 0x16, 0x19, 0x1E, 0x1F},
     {0x20, 0x21, 0x22, 0x23, 0x24}
 };
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
 
 UART_HandleTypeDef huart1;
 
@@ -71,15 +55,6 @@ static void MX_USART1_UART_Init(void);
 static void UART_Receive_Data(void);
 static void Send_HID_Key(uint8_t key);
 static void scan_keypad(void);
-
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -130,7 +105,6 @@ int main(void)
 	          }
 	  inactivity_timer = 0;
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -243,10 +217,10 @@ static void MX_GPIO_Init(void)
 
 void scan_keypad(void) {
     for (int row = 0; row < ROW_COUNT; row++) {
-        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);  // Set row to high
+        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_SET);
 
         for (int col = 0; col < COL_COUNT; col++) {
-            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
+            if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
             	
             	if(isSecondlayer){
             		key_code = layer1[row][col];
@@ -259,27 +233,23 @@ void scan_keypad(void) {
             }
         }
 
-        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);  // Reset row to low
-        HAL_Delay(10);  // Debouncing delay
+        HAL_GPIO_WritePin(GPIOA, rowPins[row], GPIO_PIN_RESET);
+        HAL_Delay(10);
     }
-    HAL_Delay(100);  // Additional debounce or delay between scans
+    HAL_Delay(100);
 }
 
 void Send_HID_Key(uint8_t key) {
-    uint8_t HID_report[8] = {0};  // HID report with a size of 8 bytes
+    uint8_t HID_report[8] = {0};
 
-    // Set the key in the HID report (the key code for 'W', 'A', 'S', 'D')
-    HID_report[2] = key;  // Using byte 2 to represent the key pressed
+    HID_report[2] = key;
 
-    // Send the HID report (press key)
     if (hpcd_USB_FS.State == HAL_PCD_STATE_READY) {
         USBD_HID_SendReport(&hUsbDeviceFS, HID_report, sizeof(HID_report));
     }
 
-    // Delay to simulate key press duration
     HAL_Delay(100);
 
-    // Release the key (send 0)
     HID_report[2] = 0;
     if (hpcd_USB_FS.State == HAL_PCD_STATE_READY) {
         USBD_HID_SendReport(&hUsbDeviceFS, HID_report, sizeof(HID_report));
@@ -292,6 +262,9 @@ void UART_Receive_Data(void) {
 	if (HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100) == HAL_OK) {
 		uint8_t received_address = received_data[0];
         uint8_t data = received_data[1];
+
+        if(received_address == 0x02 && data == 'N'){
+        		isSecondlayer = !isSecondlayer;
 
         inactivity_timer = 0;
 
@@ -320,10 +293,6 @@ void UART_Receive_Data(void) {
 
         	case 'M':
         		Send_HID_Key(0x2C);
-        	    break;
-
-        	case 'N':
-        		isSecondlayer = !isSecondlayer;
         	    break;
     }
 }
@@ -399,15 +368,9 @@ void UART_Receive_Data(void) {
 
 	void Enter_Sleep_Mode(void)
 	{
-	    // Optional: Disable peripherals if needed before entering sleep mode
-
-	    // Enter Sleep mode (low power mode)
 	    HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
 
 	}
-
-	// Need to add turn off and that shld sent through uart to other 3 mcus to turnf of too
-
 
 /* USER CODE BEGIN 4 */
 

@@ -19,50 +19,31 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
 /* Private define ------------------------------------------------------------*/
+
+/* Private macro -------------------------------------------------------------*/
+
+/* Private variables ---------------------------------------------------------*/
 static uint32_t inactivity_timer = 0;
 
-static bool isSecondlayer;
+static bool isSecondlayer = false;
 
 static uint8_t data[2];
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
 
-uint8_t keymap0[ROW_COUNT][COL_COUNT] = {
+uint8_t layer0[ROW_COUNT][COL_COUNT] = {
     {'Y', 'U', 'I', 'O', 'P'},
     {'H', 'J', 'K', 'L'}
 };
 
-uint8_t keymap1[ROW_COUNT][COL_COUNT] = {
+uint8_t layer1[ROW_COUNT][COL_COUNT] = {
     {},
     {}
 };
-/* USER CODE BEGIN PD */
 
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -118,10 +99,6 @@ int main(void)
 	  inactivity_timer++;
 	  scan_keypad();
 	  UART_Receive_Data();
-	  if(data[1] == 'C'){
-		  isSecondlayer = !isSecondlayer;
-	  }
-	  
 	  UART_Send_Data();
 	  
 
@@ -247,7 +224,7 @@ void UART_Receive_Data(void) {
 		uint8_t received_address = received_data[0];
 		uint8_t data = received_data[1];
 		
-	if(received_address == 0x03 && data == 'N'){
+	if(received_address == 0x03 && data == 'C'){
 		isSecondlayer = !isSecondlayer;
 	}
 }
