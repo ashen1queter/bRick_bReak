@@ -26,6 +26,8 @@
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
+uint8_t data[2];
+uint8_t key_code;
 static uint32_t inactivity_timer = 0;
 
 uint8_t HID_report[8];
@@ -206,22 +208,11 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
-void UART_Transmit_Data(MCU4_ADDRESS, key_code){
-	uint8_t data[2];
-
+void UART_Transmit_Key(MCU4_ADDRESS, key_code){
 	data[0] = mcu_address;
 	data[1] = key_code;
     // Send the key code over USART
     HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
-}
-
-void UART_Receive_Data(void) {
-	uint8_t received_data[2];
-	
-	if (HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100) == HAL_OK) {
-		uint8_t received_address = received_data[0];
-		uint8_t data = received_data[1];
-}
 }
 
 void scan_keypad(void) {
@@ -231,6 +222,7 @@ void scan_keypad(void) {
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
             	key_code = layer0[row][col];
+            	UART_Transmit_Key(MCU4_ADDRESS, key_code);
             	inactivity_timer = 0;
             	}
         	}

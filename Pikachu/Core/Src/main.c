@@ -27,6 +27,8 @@
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
+static bool isSecondlayer;
+
 static uint32_t inactivity_timer = 0;
 
 uint8_t HID_report[8] = {0};
@@ -252,7 +254,10 @@ void UART_Receive_Data(void) {
         uint8_t data = received_data[1];
 
         if(received_address == 0x02 && data == 'n' || received_address == 0x02 && data == 'c'){
+        	if(isSecondlayer){
         		HID_report[0] = 0x01;
+        		isSecondlayer = !isSecondlayer;
+        	}
 
         inactivity_timer = 0;
 

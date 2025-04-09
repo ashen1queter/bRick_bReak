@@ -62,6 +62,8 @@ void Error_Handler(void);
 #define ROW_COUNT    2
 #define COL_COUNT    3
 
+#define MCU3_ADDRESS  0x03
+
 #define R1_Pin GPIO_PIN_0
 #define R1_GPIO_Port GPIOA
 #define R2_Pin GPIO_PIN_1

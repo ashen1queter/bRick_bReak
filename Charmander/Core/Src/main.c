@@ -31,6 +31,9 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
+uint8_t data[2];
+uint8_t key_code;
+
 static uint32_t inactivity_timer = 0;
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
@@ -222,9 +225,7 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
-void UART_Transmit_Key((uint8_t mcu_address, uint8_t key_code) {
-	uint8_t data[2];
-
+void UART_Transmit_Key(MCU3_ADDRESS, key_code) {
 	data[0] = mcu_address;
 	data[1] = key_code;
     // Send the key code over USART
@@ -238,6 +239,7 @@ void scan_keypad(void) {
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {  // Check if key is pressed
             	key_code = layer0[row][col];
+            	UART_Transmit_Key(MCU2_ADDRESS, key_code);
             	inactivity_timer = 0;
             	}
         	}
