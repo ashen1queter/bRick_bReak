@@ -33,9 +33,14 @@
 #define INACTIVITY_TIMEOUT 300000
 static uint32_t inactivity_timer = 0;
 
+static bool isSecondlayer;
+
+static uint8_t data[2];
+
 #define ROW_COUNT    2
 #define COL_COUNT    5
-#define MCU3_ADDRESS  0x03
+#define MCU4_ADDRESS  0x04
+#define MCU3_ADDRESS 0x03
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
@@ -118,7 +123,13 @@ int main(void)
   {
 	  inactivity_timer++;
 	  scan_keypad();
+	  UART_Receive_Data();
+	  if(data[1] == 'C'){
+		  isSecondlayer = !isSecondlayer;
+	  }
+	  
 	  UART_Send_Data();
+	  
 
 	  if (inactivity_timer >= INACTIVITY_TIMEOUT){
 		  Enter_Sleep_Mode();
@@ -226,13 +237,26 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
-void UART_Transmit_Key((uint8_t mcu_address, uint8_t key_code) {
+void UART_Transmit_Data(MCU4_ADDRESS, key_code){
 	uint8_t data[2];
 
 	data[0] = mcu_address;
 	data[1] = key_code;
     // Send the key code over USART
     HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
+}
+
+void UART_Receive_Data(void) {
+	uint8_t received_data[2];
+	
+	if (HAL_UART_Receive(&huart1, (uint8_t *)received_data, 2, 100) == HAL_OK) {
+		uint8_t received_address = received_data[0];
+		uint8_t data = received_data[1];
+		
+	if(received_address == 0x03 && data == 'N'){
+		isSecondlayer = !isSecondlayer;
+	}
+}
 }
 
 void scan_keypad(void) {
@@ -244,11 +268,11 @@ void scan_keypad(void) {
  
             	if(isSecondlayer){
             			key_code = layer1[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU4_ADDRESS, key_code);
             		}
             	else{
             			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU4_ADDRESS, key_code);
             		}
             	inactivity_timer = 0;
             	}

@@ -263,9 +263,6 @@ void scan_keypad(void) {
             	if(isSecondlayer){
             		key_code = layer1[row][col];
             	}
-            	if(isThirdlayer){
-            		key_code = layer2[row][col];
-            	}
             	else{
             		key_code = layer0[row][col];
             	}
@@ -339,10 +336,6 @@ void UART_Receive_Data(void) {
 
         	case 'N':
         		isSecondlayer = !isSecondlayer;
-        		
-        		if(!isSecondlayer){
-        			isSecondlayer = !isSecondlayer;
-        		}
         	    break;
     }
 }
@@ -410,11 +403,7 @@ void UART_Receive_Data(void) {
         		break;
 
         	case 'V':
-        		isThirdlayer = !isThirdlayer;
-        		        		
-        		if(!isThirdlayer){
-        			isThirdlayer = !isThirdlayer;
-        		}
+        		Send_HID_Key(0x2C);
         		break;
         	}
         }
