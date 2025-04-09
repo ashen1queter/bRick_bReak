@@ -31,16 +31,9 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-#define INACTIVITY_TIMEOUT 300000
 static uint32_t inactivity_timer = 0;
 
 bool isSecondlayer = false;
-
-#define ROW_COUNT    2
-#define COL_COUNT    5
-#define MCU1_ADDRESS  0x01
-#define MCU2_ADDRESS  0x02
-#define MCU3_ADDRESS  0x03
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin, C5_Pin};
@@ -51,12 +44,7 @@ uint8_t layer0[ROW_COUNT][COL_COUNT] = {
 };
 
 uint8_t layer1[ROW_COUNT][COL_COUNT] = {
-    {0x04, 0x16, 0x19, 0x1E, 0x1F},  
-    {0x20, 0x21, 0x22, 0x23, 0x24}
-};
-
-uint8_t layer2[ROW_COUNT][COL_COUNT] = {
-    {0x04, 0x16, 0x19, 0x1E, 0x1F},  
+    {0x04, 0x16, 0x19, 0x1E, 0x1F},
     {0x20, 0x21, 0x22, 0x23, 0x24}
 };
 /* USER CODE BEGIN PD */
@@ -307,7 +295,7 @@ void UART_Receive_Data(void) {
 
         inactivity_timer = 0;
 
-        if (received_address == MCU1_ADDRESS) {
+        if (received_address == MCU2_ADDRESS) {
         	switch (data)
         	{
         	case 'Z':
@@ -339,7 +327,7 @@ void UART_Receive_Data(void) {
         	    break;
     }
 }
-        if(received_address == MCU2_ADDRESS){
+        if(received_address == MCU3_ADDRESS){
         	switch(data){
 
         	case 'Y':
@@ -379,7 +367,7 @@ void UART_Receive_Data(void) {
         		break;
         	}
 }
-        if(received_data == MCU3_ADDRESS){
+        if(received_data == MCU4_ADDRESS){
         	switch(data){
 
         	case 'B':

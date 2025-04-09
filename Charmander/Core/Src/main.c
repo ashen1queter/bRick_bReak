@@ -30,12 +30,7 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-#define INACTIVITY_TIMEOUT 300000
 static uint32_t inactivity_timer = 0;
-
-#define ROW_COUNT    2
-#define COL_COUNT    4
-#define MCU1_ADDRESS  0x02
 
 uint16_t rowPins[ROW_COUNT] = {R1_Pin, R2_Pin};
 uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin, C4_Pin};

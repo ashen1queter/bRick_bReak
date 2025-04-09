@@ -30,8 +30,6 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
-#define ROW_COUNT    2
-#define COL_COUNT    3
 
 static uint32_t inactivity_timer = 0;
 

@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Bulbasaur\\Core",
+    "\\Bulbasaur\\Core\\Inc",
+    "\\Bulbasaur\\Core\\Src",
+    "\\Charmander",
+    "\\Charmander\\Core",
+    "\\Charmander\\Core\\Inc",
+    "\\Pikachu\\Core",
+    "\\Pikachu\\Core\\Inc",
+    "\\Squirtle\\Core",
+    "\\Squirtle\\Core\\Src"
+  ],
+  "SelectedNode": "\\Charmander\\Core\\Inc\\main.h",
+  "PreviewInSolutionExplorer": false
+}

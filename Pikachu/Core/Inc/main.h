@@ -57,6 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define INACTIVITY_TIMEOUT 300000
+
+#define ROW_COUNT    2
+#define COL_COUNT    5
+#define MCU2_ADDRESS  0x02
+#define MCU3_ADDRESS  0x03
+#define MCU4_ADDRESS  0x04
+
 #define R1_Pin GPIO_PIN_0
 #define R1_GPIO_Port GPIOA
 #define R2_Pin GPIO_PIN_1
