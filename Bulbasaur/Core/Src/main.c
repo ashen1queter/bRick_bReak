@@ -245,22 +245,22 @@ void scan_keypad(void) {
         for (int col = 0; col < COL_COUNT; col++) {
             if (HAL_GPIO_ReadPin(GPIOA, colPins[col]) == GPIO_PIN_RESET) {
             	
-            	if (keymap0[row][col] == 'N'){
+            	if (keymap0[row][col] == 'C'){
             		isSecondlayer = !isSecondlayer;
-            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
+            		UART_Transmit_Key(MCU3_ADDRESS, key_code);
             	 	 }
-            	if (keympa0[row][col] == 'N'){
-            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
+            	if (keympa0[row][col] == 'C'){
+            		UART_Transmit_Key(MCU3_ADDRESS, key_code);
             	    isSecondlayer = !isSecondlayer;
             	     }
             	
             	if(isSecondlayer){
             			key_code = layer2[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU3_ADDRESS, key_code);
             		}
             	else{
             			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU3_ADDRESS, key_code);
             		}
                 	inactivity_timer = 0;
             	}

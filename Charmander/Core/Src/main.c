@@ -244,18 +244,20 @@ void scan_keypad(void) {
             	
             	if (keymap0[row][col] == 'N'){
             		isSecondlayer = !isSecondlayer;
+            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
             	}
             	if (keympa0[row][col] == 'N'){
             		isSecondlayer = !isSecondlayer;
+            		UART_Transmit_Key(MCU2_ADDRESS, key_code);
             	}
             	
             	if(isSecondlayer){
             			key_code = layer2[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU2_ADDRESS, key_code);
             		}
             	else{
             			key_code = layer0[row][col];
-            			UART_Transmit_Key(MCU1_ADDRESS, key_code);
+            			UART_Transmit_Key(MCU2_ADDRESS, key_code);
             		}
                 inactivity_timer = 0;
             }
