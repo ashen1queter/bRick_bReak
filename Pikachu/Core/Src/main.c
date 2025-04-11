@@ -52,8 +52,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void UART_Receive_Data(void);
-static void Send_HID_Key(uint8_t key);
 static void scan_keypad(void);
+static void Send_HID_Key(uint8_t key);
+static void Enter_Sleep_Mode(void);
 
 /**
   * @brief  The application entry point.
@@ -360,11 +361,10 @@ void UART_Receive_Data(void) {
         }
 }
 
-	void Enter_Sleep_Mode(void)
-	{
-	    HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-
-	}
+void Enter_Sleep_Mode(void)
+{
+	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+}
 
 /* USER CODE BEGIN 4 */
 
