@@ -1,23 +1,18 @@
-cmake_minimum_required(VERSION 3.16)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/stm32_gcc.cmake)
+# Toolchain for arm-none-eabi
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR cortex-m3)
 
-project(Pikachu C ASM)
+set(CMAKE_C_COMPILER arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 
-set(SOURCES
-    Core/Src/main.c
-    Core/Src/stm32f1xx_it.c
-    Core/Src/system_stm32f1xx.c
-    Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-    # Add more HAL sources here as needed
-)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-include_directories(
-    Core/Inc
-    Drivers/STM32F1xx_HAL_Driver/Inc
-    Drivers/CMSIS/Device/ST/STM32F1xx/Include
-    Drivers/CMSIS/Include
-)
+# Compiler flags
+set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -O2 -g -Wall -fdata-sections -ffunction-sections")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -Wl,-Map=output.map")
 
-add_executable(Pikachu.elf ${SOURCES})
-target_link_options(Pikachu.elf PRIVATE -TSTM32F103C8TX_FLASH.ld)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
