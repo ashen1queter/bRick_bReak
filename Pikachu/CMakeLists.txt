@@ -5,17 +5,13 @@ project(Pikachu C ASM)
 
 set(SOURCES
     Core/Src/main.c
-    Core/Src/stm32f1xx_it.c
-    Core/Src/system_stm32f1xx.c
-    Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-    # Add more HAL sources here as needed
 )
 
 include_directories(
-    Core/Inc
-    Drivers/STM32F1xx_HAL_Driver/Inc
-    Drivers/CMSIS/Device/ST/STM32F1xx/Include
     Drivers/CMSIS/Include
+    Drivers/CMSIS/Device/ST/STM32F1xx/Include
+    Drivers/STM32F1xx_HAL_Driver/Inc
+    src
 )
 
 add_executable(Pikachu.elf ${SOURCES})
