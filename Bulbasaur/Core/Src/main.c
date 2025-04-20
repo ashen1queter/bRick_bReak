@@ -42,7 +42,7 @@ uint16_t colPins[COL_COUNT] = {C1_Pin, C2_Pin, C3_Pin};
 
 uint8_t layer0[ROW_COUNT][COL_COUNT] = {
     {'b', 'n', 'm'},
-    {'a', 'a', 'c'}   // C for layer 2
+    {'a', 'a', 'c'}
 };
 
 /* USER CODE BEGIN PD */
@@ -229,8 +229,7 @@ static void MX_GPIO_Init(void)
 void UART_Transmit_Key(MCU3_ADDRESS, key_code){
 	data[0] = mcu_address;
 	data[1] = key_code;
-    // Send the key code over USART
-    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
+    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100); 
 }
 
 void scan_keypad(void) {

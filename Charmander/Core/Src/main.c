@@ -229,11 +229,10 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
-void UART_Transmit_Key(MCU3_ADDRESS, key_code) {
+void UART_Transmit_Key(MCU2_ADDRESS, key_code) {
 	data[0] = mcu_address;
 	data[1] = key_code;
-    // Send the key code over USART
-    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
+    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);
 }
 
 void scan_keypad(void) {

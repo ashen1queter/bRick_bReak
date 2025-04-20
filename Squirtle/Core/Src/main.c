@@ -215,8 +215,7 @@ static void MX_GPIO_Init(void)
 void UART_Transmit_Key(MCU4_ADDRESS, key_code){
 	data[0] = mcu_address;
 	data[1] = key_code;
-    // Send the key code over USART
-    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100);  // Transmit 1 byte (the key code) over USART
+    HAL_UART_Transmit(&huart1, (uint8_t *)&data, 2, 100); 
 }
 
 void scan_keypad(void) {

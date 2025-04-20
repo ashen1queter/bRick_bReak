@@ -254,7 +254,7 @@ void UART_Receive_Data(void) {
 		uint8_t received_address = received_data[0];
         uint8_t data = received_data[1];
 
-        if(received_address == 0x02 && data == 'n' || received_address == 0x02 && data == 'c'){
+        if(received_address == 0x02 && data == 'n' || received_address == 0x03 && data == 'c'){
         	isSecondlayer = !isSecondlayer;
         	if(isSecondlayer){
         		HID_report[0] = 0x01;
