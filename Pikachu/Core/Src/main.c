@@ -27,6 +27,9 @@
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
+extern USBD_HandleTypeDef hUsbDeviceFS;
+extern volatile uint8_t USB_Connected;
+
 static bool isSecondlayer == false;
 
 static uint32_t inactivity_timer = 0;
@@ -364,6 +367,15 @@ void UART_Receive_Data(void) {
 void Enter_Sleep_Mode(void)
 {
 	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+}
+
+void USB_Disconnected(void)
+{
+    USB_Connected = 0;
+}
+void USB_Connected(void)
+{
+    USB_Connected = 1;
 }
 
 /* USER CODE BEGIN 4 */
